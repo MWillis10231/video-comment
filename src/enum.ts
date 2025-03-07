@@ -41,8 +41,31 @@ enum PAGE {
   ABOUT
 }
 
+enum FONT_FAMILIES {
+  SANS_SERIF = `0`,
+  SERIF = `1`,
+  MONOSPACE = `2`,
+  CURSIVE = `3`,
+  VERDANA = `4`,
+  TIMES_NEW_ROMAN = `5`,
+  COURIER_NEW = `6`,
+  GEORGIA = `7`,
+  BRUSH_SCRIPT = `8`,
+  SEGOE_UI = `9`,
+  ARIAL = `10`,
+  TAHOMA = `11`,
+}
+
+enum SETTINGS_KEY {
+  FONT_FAMILY = 'fontFamily',
+  DARK_HIGHLIGHT_COLOR = 'darkHighlightColor',
+  LIGHT_HIGHLIGHT_COLOR = 'lightHighlightColor',
+}
+
 export {
   EVENT_TYPE,
   EVENT_TYPE_CATEGORY,
   PAGE,
+  FONT_FAMILIES,
+  SETTINGS_KEY,
 }

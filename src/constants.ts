@@ -1,6 +1,7 @@
 import { 
   EVENT_TYPE, 
-  EVENT_TYPE_CATEGORY 
+  EVENT_TYPE_CATEGORY, 
+  FONT_FAMILIES
 } from './enum';
 
 const EVENT_TYPE_TO_DESCRIPTION_MAP = {
@@ -101,7 +102,59 @@ const EVENT_TYPE_CATEGORY_MAP = {
   },
 }
 
+const FONT_FAMILIES_MAP = {
+  [FONT_FAMILIES.SANS_SERIF]: {
+    name: 'Sans Serif',
+    value: `sans-serif`,
+  },
+  [FONT_FAMILIES.SERIF]: {
+    name: 'Serif',
+    value: `serif`,
+  },
+  [FONT_FAMILIES.MONOSPACE]: {
+    name: 'Monospace',
+    value: `monospace`,
+  },
+  [FONT_FAMILIES.CURSIVE]: {
+    name: 'Cursive',
+    value: `cursive`,
+  },
+  [FONT_FAMILIES.VERDANA]: {
+    name: 'Verdana',
+    value: `'Verdana', sans-serif`,
+  },
+  [FONT_FAMILIES.TIMES_NEW_ROMAN]: {
+    name: 'Times New Roman',
+    value: `'Times New Roman', serif`,
+  },
+  [FONT_FAMILIES.COURIER_NEW]: {
+    name: 'Courier New',
+    value: `'Courier New', monospace`,
+  },
+  [FONT_FAMILIES.GEORGIA]: {
+    name: 'Georgia',
+    value: `'Georgia', serif`,
+  },
+  [FONT_FAMILIES.BRUSH_SCRIPT]: {
+    name: 'Brush Script MT',
+    value: `'Brush Script MT', cursive`,
+  },
+  [FONT_FAMILIES.SEGOE_UI]: {
+    name: 'Segoe UI',
+    value: `'Segoe UI', sans-serif`,
+  },
+  [FONT_FAMILIES.ARIAL]: {
+    name: 'Arial',
+    value: `'Arial', sans-serif`,
+  },
+  [FONT_FAMILIES.TAHOMA]: {
+    name: 'Tahoma',
+    value: `'Tahoma', sans-serif`,
+  },
+}
+
 export {
   EVENT_TYPE_TO_DESCRIPTION_MAP,
   EVENT_TYPE_CATEGORY_MAP,
+  FONT_FAMILIES_MAP
 }

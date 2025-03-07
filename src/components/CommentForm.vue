@@ -34,30 +34,57 @@ const handleEdit = ({ field, value }) => {
 </script>
 
 <template>
-  <form class="form">
+  <form>
     <h2>{{ editMode ? `Edit` : `Add` }} Comment</h2>
 
-    <label class="timestamp">
+    <div class="timestamps">
+      <h3>Timestamps</h3>
+
+      <label class="timestamp">
       Start
 
-      <input type="text" placeholder="00:00:00" :value="comment.startTimestamp" @input="$emit('edit', {
-        ...comment,
-        startTimestamp: ($event.target as HTMLInputElement).value
-      })">
+      <div class="timestampContainer">
+        <input
+          type="text"
+          placeholder="00:00:00"
+          :value="comment.startTimestamp" 
+          @input="$emit('edit', 
+            {
+              ...comment,
+              startTimestamp: ($event.target as HTMLInputElement).value
+            }
+          )"
+        >
 
-      <button type="button" @click="getAndSetTime('startTimestamp')">📺</button>
+        <button type="button" @click="getAndSetTime('startTimestamp')">📺</button>
+      </div>
     </label>
 
     <label class="timestamp">
       End
       
-      <input type="text" placeholder="00:00:00" :value="comment.endTimestamp" @input="$emit('edit', {
-        ...comment,
-        endTimestamp: ($event.target as HTMLInputElement).value
-      })">
-      
-      <button type="button" @click="getAndSetTime('endTimestamp')">📺</button>
+      <div class="timestampContainer">
+        <input
+          type="text"
+          placeholder="00:00:00" 
+          :value="comment.endTimestamp" 
+          @input="$emit('edit', 
+          {
+            ...comment,
+            endTimestamp: ($event.target as HTMLInputElement).value
+          }
+          )"
+        > 
+
+        <button 
+          type="button" 
+          @click="getAndSetTime('endTimestamp')"
+        >
+          📺
+        </button>
+      </div>
     </label>
+    </div>
 
     <div>
       <h3>Event type</h3>
@@ -120,29 +147,27 @@ const handleEdit = ({ field, value }) => {
 </template>
 
 <style scoped>
-.form {
+.timestamps {
   display: flex;
   flex-direction: column;
-  gap: 1rem;
+  gap: .5rem;
+}
+
+.timestampContainer {
+  display: flex;
+  gap: .5rem;
 }
 
 .timestamp {
-  display: block;
+  display: flex;
   gap: .2rem;
+  justify-content: space-between;
 }
 
 .buttons {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: .1rem;
-}
-
-.button {
-  white-space: nowrap;
-
-  &.active {
-    background-color: lightblue;
-  }
 }
 
 .submitButtons {

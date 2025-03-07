@@ -1,11 +1,12 @@
 <script setup lang="ts">
+  import ChangelogEntry from './ChangelogEntry.vue';
 </script>
 
 <template>
   <div class="container">
     <h2>About</h2>
 
-    <p>Current version: 1.1.0</p>
+    <p>Current version: 1.2.0</p>
 
     <article>
       <h3>What is this?</h3>
@@ -16,25 +17,39 @@
 
     <article>
       <h3>Changelog</h3>
-      <h4>## 1.1.0</h4>
-      <h5>Features</h5>
 
-      <ul>
-        <li>Add 'control' event type</li>
-        <li>Add copy to clipboard button</li>
-        <li>Add focus to explanation field when buttons are clicked</li>
-      </ul>
+      <ChangelogEntry>
+        <template #version>## 1.2.0</template>
 
-      <h5>Bug Fixes</h5>
+        <template #minor>
+          <li>Add support for light and dark modes</li>
+          <li>Add settings menu to customise font and highlight color</li>
+        </template>
+      </ChangelogEntry>
 
-      <ul>
-        <li>Fix flickering of buttons when publish mode is enabled / disabled</li>
-        <li>Fix publish mode copying extra line breaks</li>
-        <li>Fix active button not being visually apparent</li>
-      </ul>
+      <ChangelogEntry>
+        <template #version>## 1.1.0</template>
 
-      <h4>## 1.0.0</h4>
-      <h5>Initial release</h5>
+        <template #minor>
+          <li>Add 'control' event type</li>
+          <li>Add copy to clipboard button</li>
+          <li>Add focus to explanation field when buttons are clicked</li>
+        </template>
+
+        <template #bug>
+          <li>Fix flickering of buttons when publish mode is enabled / disabled</li>
+          <li>Fix publish mode copying extra line breaks</li>
+          <li>Fix active button not being visually apparent</li>
+        </template>
+      </ChangelogEntry>
+
+      <ChangelogEntry>
+        <template #version>## 1.0.0</template>
+
+        <template #major>
+          <li>Initial release</li>
+        </template>
+      </ChangelogEntry>
     </article>
   </div>
 </template>
@@ -44,11 +59,5 @@
     display: flex;
     flex-direction: column;
     gap: 1rem;
-  }
-
-  article {
-    display: flex;
-    flex-direction: column;
-    gap: .5rem;
   }
 </style>

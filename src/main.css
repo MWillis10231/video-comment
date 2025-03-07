@@ -1,12 +1,76 @@
-h1, h2, h3, h4, h5, h6, p {
+:root {
+  color-scheme: light dark;
+}
+
+.app {
+  font-family: var(--font-family), sans-serif;
+  --dark-highlight-color: #4682b4;
+  --light-highlight-color: #add8e6;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  align-items: center;
+  display: flex;
+  justify-content: space-between;
+  margin: .25em 0;
+}
+
+p {
   margin: 0;
+}
+
+ul {
+  list-style-type: circle;
+  margin: 0 0 0 2rem;
+  padding: 0;
 }
 
 * {
   box-sizing: border-box;
-  font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
 body {
   width: 600px;
+}
+
+main {
+  padding: 1rem;
+  width: 100%;
+}
+
+nav {
+  display: flex;
+  gap: .5rem;
+}
+
+button {
+  background-color: light-dark(white, DimGray);
+  border: 1px solid light-dark(lightgray, DimGray);
+  border-radius: 5px;
+  cursor: pointer;
+  padding: 2px 4px;
+  white-space: nowrap;
+
+  &:hover {
+    background-color: light-dark(lightgray, darkgray);
+  }
+
+  &.active {
+    background-color: light-dark(var(--light-highlight-color), var(--dark-highlight-color));
+    border-color: light-dark(var(--light-highlight-color), var(--dark-highlight-color));
+  }
+
+  &:disabled {
+    &.active {
+      color: inherit;
+    }
+  }
+
+  &:disabled:not(&.active) {
+    cursor: not-allowed;
+  }
+}
+
+input {
+  cursor: pointer;
 }
