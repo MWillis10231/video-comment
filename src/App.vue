@@ -29,10 +29,6 @@ getNewSettings();
   <div class="app"
     ref="app"
   >
-    <header>
-      <h1>Comments v1.2.0</h1>
-    </header>
-
     <nav>
       <button
         :class="['button', { active: page === PAGE.COMMENTS }]"
