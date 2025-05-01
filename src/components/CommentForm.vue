@@ -3,6 +3,9 @@ import { EVENT_TYPE_CATEGORY_MAP, EVENT_TYPE_TO_DESCRIPTION_MAP } from '@/consta
 import type { CommentType } from '@/types';
 import Comment from './Comment.vue';
 import { useTemplateRef } from 'vue';
+import { convertTimeStampToDate, convertDateToTimeStamp, validateTimeStamp, isTimeStampTruthy, isFirstTimeStampOlderThanSecondTimeStamp } from '@/timestampService';
+import { addSeconds } from "date-fns";
+import TimeStampEdit from './TimeStampEdit.vue';
 
 const emit = defineEmits(['add', 'edit', 'discard']);
 
@@ -16,7 +19,7 @@ const getAndSetTime = async (field) => {
   const response = await chrome.tabs.sendMessage(tab.id, { action: "getTime" });
   // do something with response here, not outside the function
 
-  handleEdit({ field, value: response });  
+  handleEditTime({ field, time: validateTimeStamp(response) });  
 }
 
 const commentRef = useTemplateRef('comment');
@@ -31,6 +34,32 @@ const handleEdit = ({ field, value }) => {
     commentRef.value.focus();
   }
 }
+
+const handleAddTime = (time: number, field: string) => {
+  let currentValue = props.comment[field];
+
+  if (!isTimeStampTruthy(currentValue)) {
+    if (field === 'startTimestamp') {
+      currentValue = '00:00:00';
+    } else if (field === 'endTimestamp' && props.comment.startTimestamp) {  
+      currentValue = props.comment.startTimestamp ?? '00:00:00';
+    }
+  }
+
+  const currentTime = convertTimeStampToDate(currentValue);
+  const newTime = addSeconds(currentTime, time);
+  const newTimeStamp = convertDateToTimeStamp(newTime);
+
+  handleEditTime({ field, time: newTimeStamp });
+}
+
+const handleEditTime = ({ field, time }) => {
+  if (field === 'endTimestamp' && isFirstTimeStampOlderThanSecondTimeStamp(props.comment.startTimestamp, time)) {
+    return;
+  }
+
+  handleEdit({ field, value: time });
+}
 </script>
 
 <template>
@@ -40,50 +69,25 @@ const handleEdit = ({ field, value }) => {
     <div class="timestamps">
       <h3>Timestamps</h3>
 
-      <label class="timestamp">
-      Start
+      <TimeStampEdit
+        :timestamp="validateTimeStamp(comment.startTimestamp)"
+        @update="handleEditTime({ field: 'startTimestamp', time: $event })"
+        @add="handleAddTime($event, 'startTimestamp')"
+        @getAndSetTime="getAndSetTime('startTimestamp')"
+        @clear="handleEdit({ field: 'startTimestamp', value: '' })"
+      >
+        Start
+      </TimeStampEdit>
 
-      <div class="timestampContainer">
-        <input
-          type="text"
-          placeholder="00:00:00"
-          :value="comment.startTimestamp" 
-          @input="$emit('edit', 
-            {
-              ...comment,
-              startTimestamp: ($event.target as HTMLInputElement).value
-            }
-          )"
-        >
-
-        <button type="button" @click="getAndSetTime('startTimestamp')">📺</button>
-      </div>
-    </label>
-
-    <label class="timestamp">
-      End
-      
-      <div class="timestampContainer">
-        <input
-          type="text"
-          placeholder="00:00:00" 
-          :value="comment.endTimestamp" 
-          @input="$emit('edit', 
-          {
-            ...comment,
-            endTimestamp: ($event.target as HTMLInputElement).value
-          }
-          )"
-        > 
-
-        <button 
-          type="button" 
-          @click="getAndSetTime('endTimestamp')"
-        >
-          📺
-        </button>
-      </div>
-    </label>
+      <TimeStampEdit
+        :timestamp="validateTimeStamp(comment.endTimestamp)"
+        @update="handleEditTime({ field: 'endTimestamp', time: $event })"
+        @add="handleAddTime($event, 'endTimestamp')"
+        @getAndSetTime="getAndSetTime('endTimestamp')"
+        @clear="handleEdit({ field: 'endTimestamp', value: '' })"
+      >
+        End
+      </TimeStampEdit>
     </div>
 
     <div>
@@ -151,17 +155,6 @@ const handleEdit = ({ field, value }) => {
   display: flex;
   flex-direction: column;
   gap: .5rem;
-}
-
-.timestampContainer {
-  display: flex;
-  gap: .5rem;
-}
-
-.timestamp {
-  display: flex;
-  gap: .2rem;
-  justify-content: space-between;
 }
 
 .buttons {

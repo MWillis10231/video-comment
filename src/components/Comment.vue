@@ -9,7 +9,7 @@ defineProps<{
 
 <template>
   <span class="text">
-    {{ comment.startTimestamp }} - {{ comment.endTimestamp }} [{{ EVENT_TYPE_TO_DESCRIPTION_MAP[comment.eventType] }}] {{ comment.includeOnHighlights ? `⭐` : `` }}{{ comment.explanation ? `- ${comment.explanation}` : `` }}
+    {{ comment.startTimestamp }} {{ comment.endTimestamp ? `- ${comment.endTimestamp}` : `` }} - [{{ EVENT_TYPE_TO_DESCRIPTION_MAP[comment.eventType] }}] {{ comment.explanation || comment.includeOnHighlights ? `-` : `` }} {{ comment.includeOnHighlights ? `⭐` : `` }} {{ comment.explanation }}
   </span>
 </template>
 

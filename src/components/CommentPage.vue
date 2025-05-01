@@ -112,10 +112,16 @@ getStoredComments();
         </button>
 
         <button
-         v-if="comments.length"
-         @click="removeComments"
+          :disabled="comments.length === 0"
+          @click="removeComments"
         >
           🗑️
+        </button>
+
+        <button
+          @click=""  
+        >
+          ⬆️
         </button>
       </h2>
 
