@@ -1,6 +1,8 @@
 <script setup lang="ts">
 defineEmits(['update', 'add', 'getAndSetTime', 'clear']);
 
+const PLACEHOLDER = '00:00:00';
+
 defineProps<{
     timestamp: string;
   }>();
@@ -14,20 +16,24 @@ defineProps<{
 
       <div class="timestampContainer">
         <input
+          class="timestampInput"
+          :class="{
+            'timestampInputPlaceholder': timestamp === PLACEHOLDER,
+          }"
           type="text"
-          placeholder="00:00:00" 
-          :value="timestamp" 
+          :placeholder="PLACEHOLDER"
+          :value="timestamp"
           @input="$emit('update', ($event.target as HTMLInputElement).value)"
-        > 
+        >
 
-        <button 
-          type="button" 
+        <button
+          type="button"
           @click="$emit('getAndSetTime')"
         >
           📺
         </button>
       </div>
-      
+
       <div class="timestampContainer">
         <button
           type="button"
@@ -37,7 +43,7 @@ defineProps<{
           -15
         </button>
 
-        <button 
+        <button
           class="timestampTimeButton"
           type="button"
           @click="$emit('add', -10)"
@@ -53,8 +59,8 @@ defineProps<{
           -5
         </button>
 
-        <button 
-          type="button" 
+        <button
+          type="button"
           @click="$emit('clear')"
         >
           ❌
@@ -68,7 +74,7 @@ defineProps<{
           +5
         </button>
 
-        <button 
+        <button
           class="timestampTimeButton"
           type="button"
           @click="$emit('add', 10)"
@@ -105,6 +111,10 @@ defineProps<{
 .timestampContainer {
   display: flex;
   gap: .2rem;
+}
+
+.timestampInput {
+
 }
 
 .timestampLabel {

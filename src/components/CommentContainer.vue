@@ -13,12 +13,12 @@ defineProps<{
 
 <template>
   <li class="commentContainer">
-    <Comment :comment="comment" />
-
     <div class="buttons" v-if="!hideButtons">
       <button @click="$emit(`edit`, comment.id)">✏️</button>
-      <button @click="$emit(`delete`, comment.id)">❌</button>
+      <button @click="$emit(`delete`, comment.id)">{{ comment.deleted ? '♻️' : '❌' }}</button>
     </div>
+
+    <Comment :comment="comment" />
   </li>
 </template>
 
@@ -27,7 +27,6 @@ defineProps<{
     display: flex;
     height: 23px;
     gap: 0.5rem;
-    justify-content: space-between;
   }
 
   .text {

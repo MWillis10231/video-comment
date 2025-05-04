@@ -61,7 +61,7 @@ const isTimeStampTruthy = (timestamp: string): boolean => {
   return isValid && !isEmpty && !isZero;
 };
 
-const isFirstTimeStampOlderThanSecondTimeStamp = (timestampOne, timestampTwo) => {
+const compareTimeStamps = (timestampOne: string, timestampTwo: string) => {
   const timeStampOne = convertTimeStampStringToTimeStampObject(timestampOne);
   const dateOne = new Date();
   dateOne.setHours(timeStampOne.hours, timeStampOne.minutes, timeStampOne.seconds);
@@ -70,13 +70,28 @@ const isFirstTimeStampOlderThanSecondTimeStamp = (timestampOne, timestampTwo) =>
   const dateTwo = new Date();
   dateTwo.setHours(timeStampTwo.hours, timeStampTwo.minutes, timeStampTwo.seconds);
 
-  return dateOne.getTime() < dateTwo.getTime();
+  let result = 0;
+
+  if (dateOne.getTime() < dateTwo.getTime()) {
+    result = -1;
+  }
+
+  if (dateOne.getTime() > dateTwo.getTime()) {
+    result = 1;
+  }
+
+  return result;
+};
+
+const isFirstTimeStampOlder = (timestampOne: string, timestampTwo: string): boolean => {
+  return compareTimeStamps(timestampOne, timestampTwo) === -1;
 };
 
 export {
+  compareTimeStamps,
   convertTimeStampToDate,
   convertDateToTimeStamp,
   validateTimeStamp,
   isTimeStampTruthy,
-  isFirstTimeStampOlderThanSecondTimeStamp,
+  isFirstTimeStampOlder,
 }

@@ -1,9 +1,11 @@
 <script setup lang="ts">
-import { nextTick, ref, useTemplateRef, type Ref } from 'vue';
+import { computed, nextTick, ref, useTemplateRef, type Ref } from 'vue';
 import CommentContainer from './CommentContainer.vue';
 import NewCommentContainer from './NewCommentContainer.vue';
 import EditCommentContainer from './EditCommentContainer.vue';
 import type { CommentType } from '@/types';
+import { compareTimeStamps } from '@/timestampService';
+import { parseComments } from '@/commentService';
 
 const comments = ref([]) as Ref<CommentType[]>;
 const editMode = ref(false);
@@ -14,6 +16,7 @@ const commentsListRef = useTemplateRef('commentsList');
 
 const handleAddComment = (comment: CommentType) => {
   comments.value.push(comment);
+  comments.value = sortComments(comments.value);
   storeComments()
 };
 
@@ -39,17 +42,50 @@ const handleSaveEditedComment = (newComment: CommentType) => {
   leaveEditMode();
 };
 
-const handleRemoveComment = (id: string) => {
-  comments.value = comments.value.filter((comment) => comment.id !== id);
+const handleDeleteComment = (id: string) => {
+  const index = comments.value.findIndex((comment) => comment.id === id);
+
+  comments.value[index] = {
+    ...comments.value[index],
+    deleted: !comments.value[index].deleted,
+  };
   storeComments();
+};
+
+const handleCleanComments = () => {
+  if (window.confirm(`Remove all comments marked for deletion?`)) {
+    comments.value = comments.value.filter((comment) => !comment.deleted);
+    storeComments();
+  }
 };
 
 const getStoredComments = () => {
   const storedComments = localStorage.getItem('comments');
 
   if (storedComments) {
-    comments.value = JSON.parse(storedComments);
+    comments.value = sortComments(JSON.parse(storedComments));
   }
+}
+
+const readCommentsFromPage = async () => {
+  const [tab] = await chrome.tabs.query({ active: true, lastFocusedWindow: true });
+  const response = await chrome.tabs.sendMessage(tab.id, { action: 'getComments' });
+
+  if (response) {
+    comments.value = sortComments(parseComments(response));
+    storeComments();
+  }
+};
+
+const sortComments = (comments) => {
+  return comments.sort((a, b) => {
+    const result = compareTimeStamps(a.startTimestamp, b.startTimestamp);
+    const areTimestampsEqual = result === 0;
+
+    return areTimestampsEqual
+      ? compareTimeStamps(a.endTimestamp, b.endTimestamp)
+      : result;
+  });
 }
 
 const storeComments = () => localStorage.setItem('comments', JSON.stringify(comments.value));
@@ -80,6 +116,14 @@ const copyCommentsToClipboard = async () => {
     }
   }}
 
+const commentsToShow = computed(() => {
+  if (publishMode.value) {
+    return comments.value.filter((comment) => !comment.deleted);
+  }
+
+  return comments.value;
+});
+
 getStoredComments();
 </script>
 
@@ -89,26 +133,34 @@ getStoredComments();
       <EditCommentContainer
         v-if="editMode && editComment"
         :comment="editComment"
-        @save="handleSaveEditedComment" 
+        @save="handleSaveEditedComment"
         @discard="leaveEditMode"
       />
         <NewCommentContainer v-else @add="handleAddComment" />
     </section>
 
     <section>
-      <h2>
+      <h2 class="commentsHeader">
         All Comments
 
-        <button 
+        <button
           @click="copyCommentsToClipboard"
         >
           📋
         </button>
 
-        <button 
+        <button
           @click="publishMode = !publishMode"
         >
           {{ publishMode ? `✏️` : `💎` }}
+        </button>
+
+        <button
+          v-if="!publishMode"
+          @click="handleCleanComments"
+          :disabled="comments.length === 0"
+        >
+          🧽
         </button>
 
         <button
@@ -119,20 +171,20 @@ getStoredComments();
         </button>
 
         <button
-          @click=""  
+          @click="readCommentsFromPage"
         >
           ⬆️
         </button>
       </h2>
 
       <ul ref="commentsList">
-        <CommentContainer 
-          v-for="(comment, index) in comments" 
-          :key="index" 
+        <CommentContainer
+          v-for="(comment, index) in commentsToShow"
+          :key="index"
           :comment="comment"
           :hideButtons="editMode || publishMode"
           @edit="handleEditComment"
-          @delete="handleRemoveComment"
+          @delete="handleDeleteComment"
         />
       </ul>
     </section>
@@ -149,5 +201,10 @@ getStoredComments();
 
   .section {
     width: 100%;
+  }
+
+  .commentsHeader {
+    gap: .5rem;
+    width: fit-content
   }
 </style>

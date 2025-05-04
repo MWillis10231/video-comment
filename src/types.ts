@@ -9,6 +9,7 @@ type CommentType = {
   eventType: EVENT_TYPE;
   includeOnHighlights: boolean;
   explanation: string;
+  deleted?: boolean;
 };
 
 export type ColorValueHex = `#${string}`;

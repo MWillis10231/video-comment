@@ -19,6 +19,22 @@
       <h3>Changelog</h3>
 
       <ChangelogEntry>
+        <template #version>## 1.3.0</template>
+
+        <template #minor>
+          <li>Added quick buttons for video times (+- seconds) and deleting timestamps</li>
+          <li>Added option to import video comments from a video</li>
+          <li>Deletion of single comments is temporary until clean button used</li>
+          <li>Added option to restore deleted comments</li>
+          <li>Deleted comments are not copied to the clipboard, nor visible in publish mode</li>
+        </template>
+
+        <template #bug>
+          <li>Fixed comments not ordering by time - they now re-arrange themselves by start timestamp, then end timestamp</li>
+          <li>Improved visual consistency between different comment types</li>
+        </template>
+
+      <ChangelogEntry>
         <template #version>## 1.2.0</template>
 
         <template #minor>

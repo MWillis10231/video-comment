@@ -2,8 +2,8 @@
 import { EVENT_TYPE_CATEGORY_MAP, EVENT_TYPE_TO_DESCRIPTION_MAP } from '@/constants';
 import type { CommentType } from '@/types';
 import Comment from './Comment.vue';
-import { useTemplateRef } from 'vue';
-import { convertTimeStampToDate, convertDateToTimeStamp, validateTimeStamp, isTimeStampTruthy, isFirstTimeStampOlderThanSecondTimeStamp } from '@/timestampService';
+import { ref, useTemplateRef } from 'vue';
+import { convertTimeStampToDate, convertDateToTimeStamp, validateTimeStamp, isTimeStampTruthy, isFirstTimeStampOlder } from '@/timestampService';
 import { addSeconds } from "date-fns";
 import TimeStampEdit from './TimeStampEdit.vue';
 
@@ -14,12 +14,14 @@ const props = defineProps<{
   editMode?: boolean;
 }>();
 
+const videoDuration = ref(null)
+
 const getAndSetTime = async (field) => {
   const [tab] = await chrome.tabs.query({active: true, lastFocusedWindow: true});
   const response = await chrome.tabs.sendMessage(tab.id, { action: "getTime" });
   // do something with response here, not outside the function
 
-  handleEditTime({ field, time: validateTimeStamp(response) });  
+  handleEditTime({ field, time: validateTimeStamp(response) });
 }
 
 const commentRef = useTemplateRef('comment');
@@ -41,7 +43,7 @@ const handleAddTime = (time: number, field: string) => {
   if (!isTimeStampTruthy(currentValue)) {
     if (field === 'startTimestamp') {
       currentValue = '00:00:00';
-    } else if (field === 'endTimestamp' && props.comment.startTimestamp) {  
+    } else if (field === 'endTimestamp' && props.comment.startTimestamp) {
       currentValue = props.comment.startTimestamp ?? '00:00:00';
     }
   }
@@ -53,13 +55,30 @@ const handleAddTime = (time: number, field: string) => {
   handleEditTime({ field, time: newTimeStamp });
 }
 
-const handleEditTime = ({ field, time }) => {
-  if (field === 'endTimestamp' && isFirstTimeStampOlderThanSecondTimeStamp(props.comment.startTimestamp, time)) {
-    return;
+const handleEditTime = async ({ field, time }) => {
+  if (videoDuration.value) {
+    const isValidTime = isFirstTimeStampOlder(time, videoDuration.value);
+
+    if (!isValidTime) {
+      return;
+    }
   }
 
-  handleEdit({ field, value: time });
+  if (field !== 'endTimestamp' || isFirstTimeStampOlder(props.comment.startTimestamp, time)) {
+    handleEdit({ field, value: time });
+  }
 }
+
+const getVideoDuration = async () => {
+  const [tab] = await chrome.tabs.query({active: true, lastFocusedWindow: true});
+  const response = await chrome.tabs.sendMessage(tab.id, { action: "getDuration" });
+
+  if (response) {
+    videoDuration.value = response;
+  }
+}
+
+getVideoDuration();
 </script>
 
 <template>
@@ -97,11 +116,11 @@ const handleEditTime = ({ field, time }) => {
         <h4>{{ category.name }} {{ category.emoji }}</h4>
 
         <div class="buttons">
-          <button 
-            v-for="(type, index) in category.eventTypes" 
+          <button
+            v-for="(type, index) in category.eventTypes"
             :class="['button', { ['active']: comment.eventType === type }]"
             type="button"
-            :key="index" 
+            :key="index"
             @click="handleEdit({ field: 'eventType', value: type })"
           >
             {{ EVENT_TYPE_TO_DESCRIPTION_MAP[type] }}
@@ -111,11 +130,11 @@ const handleEditTime = ({ field, time }) => {
 
       <div>
         ⭐ Include on highlights:
-        <input 
-          type="checkbox" 
-          :value="comment.includeOnHighlights" 
-          :checked="comment.includeOnHighlights" 
-          @input="$emit('edit', 
+        <input
+          type="checkbox"
+          :value="comment.includeOnHighlights"
+          :checked="comment.includeOnHighlights"
+          @input="$emit('edit',
             {
               ...comment,
               includeOnHighlights: ($event.target as HTMLInputElement).checked
@@ -127,7 +146,7 @@ const handleEditTime = ({ field, time }) => {
       <div>
         <label>
           Extra Explanation
-          <textarea 
+          <textarea
             id="comment"
             ref="comment"
             :value="comment.explanation"
