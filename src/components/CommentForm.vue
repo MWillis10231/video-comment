@@ -2,108 +2,48 @@
 import { EVENT_TYPE_CATEGORY_MAP, EVENT_TYPE_TO_DESCRIPTION_MAP } from '@/constants';
 import type { CommentType } from '@/types';
 import Comment from './Comment.vue';
-import { ref, useTemplateRef } from 'vue';
-import { convertTimeStampToDate, convertDateToTimeStamp, validateTimeStamp, isTimeStampTruthy, isFirstTimeStampOlder } from '@/timestampService';
-import { addSeconds } from "date-fns";
+import { parseTimeStamp } from '@/timestampService';
 import TimeStampEdit from './TimeStampEdit.vue';
+import { computed } from 'vue';
 
-const emit = defineEmits(['add', 'edit', 'discard']);
+defineEmits(['edit', 'editTime', 'addTime', 'getAndSetTime', 'complete']);
 
 const props = defineProps<{
   comment: CommentType;
-  editMode?: boolean;
 }>();
 
-const videoDuration = ref(null)
-
-const getAndSetTime = async (field) => {
-  const [tab] = await chrome.tabs.query({active: true, lastFocusedWindow: true});
-  const response = await chrome.tabs.sendMessage(tab.id, { action: "getTime" });
-  // do something with response here, not outside the function
-
-  handleEditTime({ field, time: validateTimeStamp(response) });
-}
-
-const commentRef = useTemplateRef('comment');
-
-const handleEdit = ({ field, value }) => {
-  emit('edit', {
-    ...props.comment,
-    [field]: value
-  });
-
-  if (commentRef.value) {
-    commentRef.value.focus();
-  }
-}
-
-const handleAddTime = (time: number, field: string) => {
-  let currentValue = props.comment[field];
-
-  if (!isTimeStampTruthy(currentValue)) {
-    if (field === 'startTimestamp') {
-      currentValue = '00:00:00';
-    } else if (field === 'endTimestamp' && props.comment.startTimestamp) {
-      currentValue = props.comment.startTimestamp ?? '00:00:00';
-    }
-  }
-
-  const currentTime = convertTimeStampToDate(currentValue);
-  const newTime = addSeconds(currentTime, time);
-  const newTimeStamp = convertDateToTimeStamp(newTime);
-
-  handleEditTime({ field, time: newTimeStamp });
-}
-
-const handleEditTime = async ({ field, time }) => {
-  if (videoDuration.value) {
-    const isValidTime = isFirstTimeStampOlder(time, videoDuration.value);
-
-    if (!isValidTime) {
-      return;
-    }
-  }
-
-  if (field !== 'endTimestamp' || isFirstTimeStampOlder(props.comment.startTimestamp, time)) {
-    handleEdit({ field, value: time });
-  }
-}
-
-const getVideoDuration = async () => {
-  const [tab] = await chrome.tabs.query({active: true, lastFocusedWindow: true});
-  const response = await chrome.tabs.sendMessage(tab.id, { action: "getDuration" });
-
-  if (response) {
-    videoDuration.value = response;
-  }
-}
-
-getVideoDuration();
+const endTimeStampToDisplay = computed(() => {
+  return props.comment.endTimestamp ? parseTimeStamp(props.comment.endTimestamp) : '00:00:00';
+});
 </script>
 
 <template>
   <form>
-    <h2>{{ editMode ? `Edit` : `Add` }} Comment</h2>
+    <h2>
+      <slot name="title" />
+
+      Comment
+    </h2>
 
     <div class="timestamps">
       <h3>Timestamps</h3>
 
       <TimeStampEdit
-        :timestamp="validateTimeStamp(comment.startTimestamp)"
-        @update="handleEditTime({ field: 'startTimestamp', time: $event })"
-        @add="handleAddTime($event, 'startTimestamp')"
-        @getAndSetTime="getAndSetTime('startTimestamp')"
-        @clear="handleEdit({ field: 'startTimestamp', value: '' })"
+        :timestamp="parseTimeStamp(comment.startTimestamp)"
+        @update="$emit('editTime', { field: 'startTimestamp', value: $event })"
+        @add="$emit('addTime', { field: 'startTimestamp', value: $event })"
+        @getAndSetTime="$emit(`getAndSetTime`, { field: 'startTimestamp'})"
+        @clear="$emit(`editTime`, { field: 'startTimestamp', value: '00:00:00' })"
       >
         Start
       </TimeStampEdit>
 
       <TimeStampEdit
-        :timestamp="validateTimeStamp(comment.endTimestamp)"
-        @update="handleEditTime({ field: 'endTimestamp', time: $event })"
-        @add="handleAddTime($event, 'endTimestamp')"
-        @getAndSetTime="getAndSetTime('endTimestamp')"
-        @clear="handleEdit({ field: 'endTimestamp', value: '' })"
+        :timestamp="endTimeStampToDisplay"
+        @update="$emit('editTime', { field: 'endTimestamp', value: $event })"
+        @add="$emit('addTime', { field: 'endTimestamp', value: $event })"
+        @getAndSetTime="$emit(`getAndSetTime`, { field: 'endTimestamp'})"
+        @clear="$emit(`editTime`, { field: 'endTimestamp', value: null })"
       >
         End
       </TimeStampEdit>
@@ -121,7 +61,7 @@ getVideoDuration();
             :class="['button', { ['active']: comment.eventType === type }]"
             type="button"
             :key="index"
-            @click="handleEdit({ field: 'eventType', value: type })"
+            @click="$emit('edit', { field: 'eventType', value: type })"
           >
             {{ EVENT_TYPE_TO_DESCRIPTION_MAP[type] }}
           </button>
@@ -134,12 +74,7 @@ getVideoDuration();
           type="checkbox"
           :value="comment.includeOnHighlights"
           :checked="comment.includeOnHighlights"
-          @input="$emit('edit',
-            {
-              ...comment,
-              includeOnHighlights: ($event.target as HTMLInputElement).checked
-            }
-          )"
+          @input="$emit('edit', { field: 'includeOnHighlights', value: ($event.target as HTMLInputElement).checked })"
         >
       </div>
 
@@ -150,7 +85,7 @@ getVideoDuration();
             id="comment"
             ref="comment"
             :value="comment.explanation"
-            @input="handleEdit({ field: 'explanation', value: ($event.target as HTMLInputElement).value })"
+            @input="$emit('edit', { field: 'explanation', value: ($event.target as HTMLInputElement).value })"
           />
         </label>
       </div>
@@ -162,8 +97,8 @@ getVideoDuration();
       <Comment :comment="comment" />
 
       <div class="submitButtons">
-        <button type="button" @click="$emit(`add`)">{{ editMode ? `Save` : `Add` }} comment</button>
-        <button v-if="editMode" type="button" @click="$emit(`discard`)">Discard changes</button>
+        <button type="button" @click="$emit(`complete`)"><slot name="title" /> comment</button>
+        <slot name="button" />
       </div>
     </div>
   </form>

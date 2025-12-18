@@ -24,13 +24,10 @@ defineProps<{
 
 <style scoped>
   .commentContainer {
+    align-items: center;
     display: flex;
     height: 23px;
     gap: 0.5rem;
-  }
-
-  .text {
-    white-space: nowrap;
   }
 
   .buttons {

@@ -1,15 +1,15 @@
 <script setup lang="ts">
 import { ref, type Ref } from 'vue';
 import { v4 as uuidv4 } from 'uuid';
-import CommentForm from './CommentForm.vue';
+import CommentFormContainer from './CommentFormContainer.vue';
 import { EVENT_TYPE } from '@/enum';
 import type { CommentType } from '@/types';
 
 const emit = defineEmits(['add']);
 
 const getNewComment = () => ({
-  startTimestamp: '',
-  endTimestamp: '',
+  startTimestamp: '00:00:00',
+  endTimestamp: null,
   eventType: EVENT_TYPE.OTHER,
   includeOnHighlights: false,
   explanation: '',
@@ -29,7 +29,7 @@ const editComment = (newComment: CommentType) => {
 </script>
 
 <template>
-  <CommentForm 
+  <CommentFormContainer
     :comment="comment"
     @add="addComment"
     @edit="editComment"

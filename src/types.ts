@@ -5,7 +5,7 @@ import type { FONT_FAMILIES, SETTINGS_KEY } from "./enum";
 type CommentType = {
   id: UUIDTypes;
   startTimestamp: string;
-  endTimestamp: string;
+  endTimestamp?: string | null;
   eventType: EVENT_TYPE;
   includeOnHighlights: boolean;
   explanation: string;

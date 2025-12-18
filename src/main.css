@@ -29,10 +29,6 @@ ul {
   box-sizing: border-box;
 }
 
-body {
-  width: 600px;
-}
-
 main {
   padding: 1rem;
   width: 100%;
@@ -58,6 +54,11 @@ button {
   &.active {
     background-color: light-dark(var(--light-highlight-color), var(--dark-highlight-color));
     border-color: light-dark(var(--light-highlight-color), var(--dark-highlight-color));
+  }
+
+  &:active {
+    transform: translateY(2%);
+    transition: translate 0.2s ease-in-out;
   }
 
   &:disabled {

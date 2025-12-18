@@ -6,9 +6,13 @@ import AboutPage from './components/AboutPage.vue';
 import SettingsPage from './components/SettingsPage.vue';
 import { DEFAULT_SETTINGS, getSettingsValue } from './settingsService';
 import { FONT_FAMILIES_MAP } from './constants';
+import ImportPage from './components/ImportPage.vue';
+import { getTabId, sendMessageToTab } from './chromeTabsService';
 
 const page = ref(PAGE.COMMENTS);
 const app = useTemplateRef('app');
+const shouldRefresh = ref(false);
+const isLoading = ref(false);
 
 const getNewSettings = () => {
   const fontSetting = getSettingsValue(SETTINGS_KEY.FONT_FAMILY) ?? DEFAULT_SETTINGS.fontFamily;
@@ -22,14 +26,73 @@ const getNewSettings = () => {
   }
 }
 
+const isTabAvailable = async () => {
+  const tabId = await getTabId();
+
+  let response;
+
+  if (tabId) {
+    response = await sendMessageToTab(tabId, { action: "getTime" });
+  }
+
+  return response !== undefined;
+}
+
+const handleLoad = async () => {
+  shouldRefresh.value = false;
+  isLoading.value = true;
+
+  try {
+    await isTabAvailable();
+  } catch (error) {
+    shouldRefresh.value = true;
+
+    throw error;
+  } finally {
+    isLoading.value = false;
+  }
+}
+
 getNewSettings();
+handleLoad();
 </script>
 
 <template>
   <div class="app"
     ref="app"
   >
-    <nav>
+    <main
+      v-if="isLoading"
+      class="loading"
+    >
+      <h1>Loading...</h1>
+      <p class="loader" />
+      <p>Please wait while the extension is loading.</p>
+    </main>
+
+    <main
+      v-if="shouldRefresh"
+      class="error"
+    >
+        <h1>⚠️ Tab not available ⚠️</h1>
+        <p>
+          Please reload the Browser tab/page and wait until loading finished. Then close and open the extension.
+          <br />
+          Or click the button below to refresh the extension.
+          <br />
+          If the problem persists, please check if the extension is installed correctly.
+        </p>
+
+        <button
+          class="button"
+          @click="handleLoad"
+        >
+          🔃 Reload extension
+        </button>
+    </main>
+
+    <template v-else>
+      <nav>
       <button
         :class="['button', { active: page === PAGE.COMMENTS }]"
         :disabled="page === PAGE.COMMENTS"
@@ -47,6 +110,14 @@ getNewSettings();
       </button>
 
       <button
+        :class="['button', { active: page === PAGE.IMPORT }]"
+        :disabled="page === PAGE.IMPORT"
+        @click="page = PAGE.IMPORT"
+      >
+        Import ⬆️
+      </button>
+
+      <button
         :class="['button', { active: page === PAGE.ABOUT }]"
         :disabled="page === PAGE.ABOUT"
         @click="page = PAGE.ABOUT"
@@ -56,16 +127,48 @@ getNewSettings();
     </nav>
 
     <main>
-      <CommentPage 
+      <CommentPage
         v-if="page === PAGE.COMMENTS"
       />
 
-      <SettingsPage 
-        v-if="page === PAGE.SETTINGS" 
+      <SettingsPage
+        v-if="page === PAGE.SETTINGS"
         @update="getNewSettings"
+      />
+
+      <ImportPage
+        v-if="page === PAGE.IMPORT"
       />
 
       <AboutPage v-if="page === PAGE.ABOUT" />
     </main>
+    </template>
   </div>
 </template>
+
+<style scoped>
+  .loading, .error {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    align-items: center;
+    height: 100vh;
+  }
+
+  .loader {
+    width: fit-content;
+    font-size: 50px;
+    clip-path: inset(0 100% 0 0);
+    animation: loader 2s steps(4) infinite;
+
+    &:before {
+      content: "⚽⚽⚽";
+    }
+  }
+
+  @keyframes loader {
+    to {
+      clip-path: inset(0 -55px 0 0)
+    }
+  }
+</style>

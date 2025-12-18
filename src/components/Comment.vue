@@ -9,14 +9,12 @@ defineProps<{
 
 <template>
   <span :class="[`text`, comment.deleted ? `deleted` : ``]">
-    {{ comment.startTimestamp }} {{ comment.endTimestamp ? `- ${comment.endTimestamp}` : `` }} - [{{ EVENT_TYPE_TO_DESCRIPTION_MAP[comment.eventType] }}] {{ comment.explanation || comment.includeOnHighlights ? `-` : `` }} {{ comment.includeOnHighlights ? `⭐` : `` }} {{ comment.explanation }}
+    {{ comment.startTimestamp }} {{ comment.endTimestamp ? `- ${comment.endTimestamp}` : `` }} - [{{ EVENT_TYPE_TO_DESCRIPTION_MAP[comment.eventType] }}] - {{ comment.includeOnHighlights ? `⭐` : `` }} {{ comment.explanation }}
   </span>
 </template>
 
 <style scoped>
   .text {
-    white-space: nowrap;
-
     &.deleted {
       text-decoration: line-through;
     }

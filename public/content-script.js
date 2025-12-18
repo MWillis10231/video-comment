@@ -28,4 +28,37 @@ chrome.runtime.onMessage.addListener(
 
       sendResponse(flatMappedComments);
     }
+
+    if (request.action === "play") {
+      const playButton = document.querySelector('.ytp-play-button');
+
+      if (playButton) {
+        playButton.click();
+      }
+    }
+
+    if (request.action === "seek") {
+      const requestTime = Number(request.time);
+      const videoElement = document.querySelector('#movie_player > div.html5-video-container > video');
+
+      videoElement.currentTime += (requestTime);
+    }
+
+    if (request.action === "setSpeed") {
+      const requestSpeed = Number(request.speed);
+      const videoElement = document.querySelector('#movie_player > div.html5-video-container > video');
+
+      if (videoElement.playbackRate + requestSpeed <= 0.25) {
+        videoElement.playbackRate = 0.25;
+        return;
+      }
+
+      if (videoElement.playbackRate + requestSpeed >= 5) {
+        videoElement.playbackRate = 5;
+        return;
+      }
+
+      videoElement.playbackRate += requestSpeed;
+      sendResponse(videoElement.playbackRate);
+    }
   });

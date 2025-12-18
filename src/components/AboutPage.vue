@@ -6,7 +6,7 @@
   <div class="container">
     <h2>About</h2>
 
-    <p>Current version: 1.2.0</p>
+    <p>Current version: 1.3.0</p>
 
     <article>
       <h3>What is this?</h3>
@@ -33,6 +33,7 @@
           <li>Fixed comments not ordering by time - they now re-arrange themselves by start timestamp, then end timestamp</li>
           <li>Improved visual consistency between different comment types</li>
         </template>
+      </ChangelogEntry>
 
       <ChangelogEntry>
         <template #version>## 1.2.0</template>

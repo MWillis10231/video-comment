@@ -4,8 +4,10 @@ import CommentContainer from './CommentContainer.vue';
 import NewCommentContainer from './NewCommentContainer.vue';
 import EditCommentContainer from './EditCommentContainer.vue';
 import type { CommentType } from '@/types';
-import { compareTimeStamps } from '@/timestampService';
-import { parseComments } from '@/commentService';
+import { clearStoredCommentsFromLocalStorage, parseComments, retrieveStoredCommentsFromLocalStorage, sortComments, storeCommentsInLocalStorage } from '@/commentService';
+import CustomLabel from './CustomLabel.vue';
+import VideoControlsContainer from './VideoControlsContainer.vue';
+import { getTabId, sendMessageToTab } from '@/chromeTabsService';
 
 const comments = ref([]) as Ref<CommentType[]>;
 const editMode = ref(false);
@@ -60,44 +62,34 @@ const handleCleanComments = () => {
 };
 
 const getStoredComments = () => {
-  const storedComments = localStorage.getItem('comments');
-
-  if (storedComments) {
-    comments.value = sortComments(JSON.parse(storedComments));
-  }
+  comments.value = retrieveStoredCommentsFromLocalStorage();
 }
 
 const readCommentsFromPage = async () => {
-  const [tab] = await chrome.tabs.query({ active: true, lastFocusedWindow: true });
-  const response = await chrome.tabs.sendMessage(tab.id, { action: 'getComments' });
+  const tabId = await getTabId();
 
-  if (response) {
-    comments.value = sortComments(parseComments(response));
-    storeComments();
+  if (tabId) {
+    const response = await sendMessageToTab(tabId, { action: "getComments" });
+
+    if (response) {
+      comments.value = sortComments(parseComments(response));
+      storeComments();
+    }
   }
 };
 
-const sortComments = (comments) => {
-  return comments.sort((a, b) => {
-    const result = compareTimeStamps(a.startTimestamp, b.startTimestamp);
-    const areTimestampsEqual = result === 0;
-
-    return areTimestampsEqual
-      ? compareTimeStamps(a.endTimestamp, b.endTimestamp)
-      : result;
-  });
-}
-
-const storeComments = () => localStorage.setItem('comments', JSON.stringify(comments.value));
+const storeComments = () => storeCommentsInLocalStorage(comments.value);
 
 const removeComments = () => {
   if (window.confirm(`Remove all comments?`)) {
-    localStorage.removeItem('comments');
+    clearStoredCommentsFromLocalStorage();
     comments.value = [];
   }
 }
 
 const copyCommentsToClipboard = async () => {
+  // TODO: the publish mode causes a flicker when turned on and off => just show a loader?
+
   if (commentsListRef.value) {
     const isPublishMode = publishMode.value;
 
@@ -116,20 +108,25 @@ const copyCommentsToClipboard = async () => {
     }
   }}
 
-const commentsToShow = computed(() => {
-  if (publishMode.value) {
-    return comments.value.filter((comment) => !comment.deleted);
-  }
 
-  return comments.value;
+const commentsToPublish = computed(() => {
+  return comments.value.filter((comment) => !comment.deleted);
+});
+
+const commentsToShow = computed(() => {
+  return publishMode.value ? commentsToPublish.value : comments.value;
 });
 
 getStoredComments();
 </script>
 
 <template>
-  <div class="container">
-    <section>
+  <article class="container">
+    <aside class="controls">
+      <VideoControlsContainer />
+    </aside>
+
+    <section class="editCommentSection">
       <EditCommentContainer
         v-if="editMode && editComment"
         :comment="editComment"
@@ -139,42 +136,50 @@ getStoredComments();
         <NewCommentContainer v-else @add="handleAddComment" />
     </section>
 
-    <section>
+    <section class="allCommentsSection">
       <h2 class="commentsHeader">
         All Comments
 
-        <button
-          @click="copyCommentsToClipboard"
-        >
-          📋
-        </button>
+        <CustomLabel name="copy-comments">
+          <button @click="copyCommentsToClipboard">
+              📋
+          </button>
 
-        <button
-          @click="publishMode = !publishMode"
-        >
-          {{ publishMode ? `✏️` : `💎` }}
-        </button>
+          <template #tooltip>Copy comments to clipboard</template>
+        </CustomLabel>
 
-        <button
+        <CustomLabel name="toggle-publish-mode">
+          <button @click="publishMode = !publishMode">
+            {{ publishMode ? `✏️` : `💎` }}
+          </button>
+          <template #tooltip>Toggle {{ publishMode ? `edit` : `publish` }} mode</template>
+        </CustomLabel>
+
+        <CustomLabel
           v-if="!publishMode"
-          @click="handleCleanComments"
-          :disabled="comments.length === 0"
+          name="clean-comments-marked-for-deletion"
         >
-          🧽
-        </button>
+          <button
 
-        <button
-          :disabled="comments.length === 0"
-          @click="removeComments"
-        >
-          🗑️
-        </button>
+            @click="handleCleanComments"
+            :disabled="comments.length === 0"
+          >
+            🧽
+          </button>
 
-        <button
-          @click="readCommentsFromPage"
-        >
-          ⬆️
-        </button>
+          <template #tooltip>Remove all comments marked for deletion</template>
+        </CustomLabel>
+
+        <CustomLabel name="remove-all-comments">
+          <button
+            :disabled="comments.length === 0"
+            @click="removeComments"
+          >
+            🗑️
+          </button>
+
+          <template #tooltip>Remove all comments</template>
+        </CustomLabel>
       </h2>
 
       <ul ref="commentsList">
@@ -188,15 +193,30 @@ getStoredComments();
         />
       </ul>
     </section>
-  </div>
+  </article>
 </template>
 
 <style scoped>
   .container {
     display: grid;
-    grid-template-columns: 1fr 1fr;
+    grid-template-areas:
+      "header header"
+      "add all";
+    grid-template-columns: 250px 5fr;
     gap: 1rem;
     width: 100%;
+  }
+
+  .controls {
+    grid-area: header;
+  }
+
+  .editCommentSection {
+    grid-area: add;
+  }
+
+  .allCommentsSection {
+    grid-area: all;
   }
 
   .section {
@@ -205,6 +225,7 @@ getStoredComments();
 
   .commentsHeader {
     gap: .5rem;
+    white-space: nowrap;
     width: fit-content
   }
 </style>

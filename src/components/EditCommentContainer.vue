@@ -1,12 +1,12 @@
 <script setup lang="ts">
 import { ref, type Ref } from 'vue';
-import CommentForm from './CommentForm.vue';
+import CommentFormContainer from './CommentFormContainer.vue';
 import type { CommentType } from '@/types';
 
 const emit = defineEmits(['save', 'discard']);
 
-const props = defineProps<{ 
-  comment: CommentType 
+const props = defineProps<{
+  comment: CommentType
 }>();
 
 const comment = ref(props.comment) as Ref<CommentType>;
@@ -22,7 +22,7 @@ const editComment = (newComment: CommentType) => {
 </script>
 
 <template>
-  <CommentForm 
+  <CommentFormContainer
     editMode
     :comment="comment"
     @add="saveComment"
