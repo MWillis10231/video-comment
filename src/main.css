@@ -75,3 +75,9 @@ button {
 input {
   cursor: pointer;
 }
+
+.icon {
+  height: 1rem;
+  vertical-align: middle;
+  width: 1rem;
+}

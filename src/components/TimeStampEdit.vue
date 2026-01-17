@@ -1,4 +1,13 @@
 <script setup lang="ts">
+import CloseIcon from './Icons/CloseIcon.vue';
+import ForwardFiveIcon from './Icons/ForwardFiveIcon.vue';
+import ForwardTenIcon from './Icons/ForwardTenIcon.vue';
+import ForwardThirtyIcon from './Icons/ForwardThirtyIcon.vue';
+import ReplayFiveIcon from './Icons/ReplayFiveIcon.vue';
+import ReplayTenIcon from './Icons/ReplayTenIcon.vue';
+import ReplayThirtyIcon from './Icons/ReplayThirtyIcon.vue';
+import TimerIcon from './Icons/TimerIcon.vue';
+
 defineEmits(['update', 'add', 'getAndSetTime', 'clear']);
 
 const PLACEHOLDER = '00:00:00';
@@ -10,9 +19,9 @@ defineProps<{
 
 <template>
   <label class="timestamp">
-    <span class="timestampLabel">
+    <div class="timestampLabel">
       <slot />
-    </span>
+    </div>
 
       <div class="timestampContainer">
         <input
@@ -30,7 +39,7 @@ defineProps<{
           type="button"
           @click="$emit('getAndSetTime')"
         >
-          📺
+          <TimerIcon class="icon" />
         </button>
       </div>
 
@@ -38,9 +47,9 @@ defineProps<{
         <button
           type="button"
           class="timestampTimeButton"
-          @click="$emit('add', -15)"
+          @click="$emit('add', -30)"
         >
-          -15
+          <ReplayThirtyIcon class="icon" />
         </button>
 
         <button
@@ -48,7 +57,7 @@ defineProps<{
           type="button"
           @click="$emit('add', -10)"
         >
-          -10
+          <ReplayTenIcon class="icon" />
         </button>
 
         <button
@@ -56,14 +65,14 @@ defineProps<{
           type="button"
           @click="$emit('add', -5)"
         >
-          -5
+          <ReplayFiveIcon class="icon" />
         </button>
 
         <button
           type="button"
           @click="$emit('clear')"
         >
-          ❌
+          <CloseIcon class="icon close" />
         </button>
 
         <button
@@ -71,7 +80,7 @@ defineProps<{
           class="timestampTimeButton"
           @click="$emit('add', 5)"
         >
-          +5
+          <ForwardFiveIcon class="icon" />
         </button>
 
         <button
@@ -79,15 +88,7 @@ defineProps<{
           type="button"
           @click="$emit('add', 10)"
         >
-          +10
-        </button>
-
-        <button
-          class="timestampTimeButton"
-          type="button"
-          @click="$emit('add', 15)"
-        >
-          +15
+          <ForwardTenIcon class="icon" />
         </button>
 
         <button
@@ -95,7 +96,7 @@ defineProps<{
           type="button"
           @click="$emit('add', 30)"
         >
-          +30
+          <ForwardThirtyIcon class="icon" />
         </button>
       </div>
   </label>
@@ -113,17 +114,19 @@ defineProps<{
   gap: .2rem;
 }
 
-.timestampInput {
-
+.icon {
+  fill: white;
 }
 
-.timestampLabel {
-  width: 2.2em;
+.close {
+  fill: red;
 }
 
 .timestampTimeButton {
-  font-size: .7rem;
-  text-align: left;
-  width: 1.5rem;
+  align-items: center;
+  display: inline-flex;
+  justify-content: center;
+  padding: 0;
+  width: 2rem;
 }
 </style>

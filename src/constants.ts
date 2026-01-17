@@ -1,3 +1,9 @@
+import CardsIcon from './components/Icons/CardsIcon.vue';
+import FlagIcon from './components/Icons/FlagIcon.vue';
+import ShieldIcon from './components/Icons/ShieldIcon.vue';
+import SwordsIcon from './components/Icons/SwordsIcon.vue';
+import ToolsIcon from './components/Icons/ToolsIcon.vue';
+import WatchIcon from './components/Icons/WatchIcon.vue';
 import {
   EVENT_TYPE,
   EVENT_TYPE_CATEGORY,
@@ -36,7 +42,8 @@ const EVENT_TYPE_CATEGORY_MAP = {
   [EVENT_TYPE_CATEGORY.ATTACK]: {
     name: 'Attack',
     color: '#f44336',
-    emoji: '⚔️',
+    keyboardKey: 'a',
+    icon: SwordsIcon,
     eventTypes: [
       EVENT_TYPE.GOAL,
       EVENT_TYPE.PASS,
@@ -48,7 +55,8 @@ const EVENT_TYPE_CATEGORY_MAP = {
   [EVENT_TYPE_CATEGORY.DEFENSE]: {
     name: 'Defense',
     color: '#4caf50',
-    emoji: '🛡️',
+    keyboardKey: 'd',
+    icon: ShieldIcon,
     eventTypes: [
       EVENT_TYPE.TACKLE,
       EVENT_TYPE.DEFENSIVE_ACTION,
@@ -58,7 +66,8 @@ const EVENT_TYPE_CATEGORY_MAP = {
   [EVENT_TYPE_CATEGORY.DISCIPLINE]: {
     name: 'Discipline',
     color: '#ffeb3b',
-    emoji: '🤬',
+    keyboardKey: 'f',
+    icon: CardsIcon,
     eventTypes: [
       EVENT_TYPE.FOUL,
       EVENT_TYPE.YELLOW_CARD,
@@ -68,7 +77,8 @@ const EVENT_TYPE_CATEGORY_MAP = {
   [EVENT_TYPE_CATEGORY.SET_PIECE]: {
     name: 'Set Piece',
     color: '#2196f3',
-    emoji: '🚩',
+    icon: FlagIcon,
+    keyboardKey: 'r',
     eventTypes: [
       EVENT_TYPE.PENALTY,
       EVENT_TYPE.FREE_KICK,
@@ -79,7 +89,8 @@ const EVENT_TYPE_CATEGORY_MAP = {
   [EVENT_TYPE_CATEGORY.TEMPORAL]: {
     name: 'Temporal',
     color: '#9c27b0',
-    emoji: '⌛',
+    icon: WatchIcon,
+    keyboardKey: 't',
     eventTypes: [
       EVENT_TYPE.KICK_OFF,
       EVENT_TYPE.HALF_TIME,
@@ -91,7 +102,8 @@ const EVENT_TYPE_CATEGORY_MAP = {
   [EVENT_TYPE_CATEGORY.OTHER]: {
     name: 'Other',
     color: '#607d8b',
-    emoji: '🤷‍♂️',
+    icon: ToolsIcon,
+    keyboardKey: 'q',
     eventTypes: [
       EVENT_TYPE.INJURY,
       EVENT_TYPE.OFFSIDE,

@@ -6,7 +6,7 @@ type CommentType = {
   id: UUIDTypes;
   startTimestamp: string;
   endTimestamp?: string | null;
-  eventType: EVENT_TYPE;
+  eventType: EVENT_TYPE | EVENT_TYPE[];
   includeOnHighlights: boolean;
   explanation: string;
   deleted?: boolean;
