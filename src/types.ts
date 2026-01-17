@@ -6,10 +6,11 @@ type CommentType = {
   id: UUIDTypes;
   startTimestamp: string;
   endTimestamp?: string | null;
-  eventType: EVENT_TYPE | EVENT_TYPE[];
+  eventTypes: EVENT_TYPE[];
   includeOnHighlights: boolean;
   explanation: string;
   deleted?: boolean;
+  includeOnAwardShortlist?: boolean;
 };
 
 export type ColorValueHex = `#${string}`;
@@ -20,7 +21,12 @@ type Settings = {
   [SETTINGS_KEY.LIGHT_HIGHLIGHT_COLOR]?: ColorValueHex;
 };
 
+type EventTypeString = {
+  [Property in keyof EVENT_TYPE]: string;
+}
+
 export type {
   CommentType,
   Settings,
+  EventTypeString
 };

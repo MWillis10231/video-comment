@@ -36,7 +36,7 @@ const handleEdit = ({ field, value }) => {
     [field]: value
   }
 
-  if (field === 'eventType' && value === EVENT_TYPE.GOAL) {
+  if (field === 'eventTypes' && value === EVENT_TYPE.GOAL) {
     commentToEmit = {
       ...commentToEmit,
       includeOnHighlights: true,

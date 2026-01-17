@@ -60,10 +60,10 @@ const endTimeStampToDisplay = computed(() => {
         <div class="buttons">
           <button
             v-for="(type, index) in category.eventTypes"
-            :class="['button', { ['active']: comment.eventType === type }]"
+            :class="['button', { ['active']: comment.eventTypes === type }]"
             type="button"
             :key="index"
-            @click="$emit('edit', { field: 'eventType', value: type })"
+            @click="$emit('edit', { field: 'eventTypes', value: type })"
           >
             {{ EVENT_TYPE_TO_DESCRIPTION_MAP[type] }} <span class="number">{{ index + 1 }}</span>
           </button>

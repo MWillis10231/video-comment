@@ -130,7 +130,7 @@ const copyAllCommentsAsCSV = () => {
 
 
   const csvContent = comments.value.map((comment) => {
-    return `${comment.startTimestamp},${comment.endTimestamp},${replaceSpacesWithUnderscores(EVENT_TYPE_TO_DESCRIPTION_MAP[comment.eventType])},"${sanitiseExplanation(comment.explanation)}${comment.includeOnHighlights ? '-IMP' : ''}"`;
+    return `${comment.startTimestamp},${comment.endTimestamp},${replaceSpacesWithUnderscores(comment.eventTypes.map((eventType) => EVENT_TYPE_TO_DESCRIPTION_MAP[eventType]).join(','))},"${sanitiseExplanation(comment.explanation)}${comment.includeOnHighlights ? '-IMP' : ''}"`;
   }).join('\n');
 
   navigator.clipboard.writeText(csvContent);

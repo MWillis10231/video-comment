@@ -1,17 +1,20 @@
 import type { CommentType } from "./types";
-import { EVENT_TYPE_TO_DESCRIPTION_MAP } from "./constants";
 import { EVENT_TYPE } from "./enum";
 import { compareTimeStamps } from '@/timestampService';
+import {  DESCRIPTION_TO_EVENT_TYPE_MAP, EVENT_TYPE_TO_DESCRIPTION_MAP } from "./constants";
 
 const convertCommentStringToCommentObject = (commentString: string): CommentType | null => {
   const includeOnHighlights = commentString?.includes("⭐") || false;
-  const cleanedCommentString = commentString?.replace("⭐", "").trim() || "";
+  const includeOnAwardShortlist = commentString?.includes("🏆") || false;
+
+  const cleanedCommentString = commentString?.replace(/⭐|🏆/g, "").trim() || "";
 
   const timeStampsRegex = new RegExp(/([0-9][0-9]?:)?([0-9]?)([0-9]:[0-9][0-9])+/g);
   const timeStampsMatch = cleanedCommentString.match(timeStampsRegex);
 
   const eventTypeRegex = new RegExp(/(?<=\[).+?(?=\])/g);
-  const eventTypeMatch = cleanedCommentString.match(eventTypeRegex);
+  const eventTypeMatch = cleanedCommentString.match(eventTypeRegex)
+
 
   const explanationRegex = new RegExp(/(?<=\]\s*-?\s*)[^\s-].*$/g);
   const explanationMatch = cleanedCommentString.match(explanationRegex);
@@ -20,8 +23,12 @@ const convertCommentStringToCommentObject = (commentString: string): CommentType
   const [eventTypeString] = eventTypeMatch || [];
   const [explanation] = explanationMatch || [];
 
-  const eventType = (Object.entries(EVENT_TYPE_TO_DESCRIPTION_MAP) as [EVENT_TYPE, string][])
-    .find(([, description]) => description.toLowerCase() === eventTypeString?.toLowerCase())?.[0];
+  const eventTypesRawArray = eventTypeString?.split(",").map(type => type.trim()) || [];
+
+  const EVENT_DESCRIPTIONS = Object.values(EVENT_TYPE_TO_DESCRIPTION_MAP);
+
+  const eventTypesStringArray = eventTypesRawArray.filter((typeString: string) => EVENT_DESCRIPTIONS.includes(typeString));
+  const eventTypesArray: EVENT_TYPE[] = eventTypesStringArray.map((stringType) => DESCRIPTION_TO_EVENT_TYPE_MAP[stringType])
 
   if (!startTimestamp) {
     console.warn("Invalid comment string, missing start timestamp:", commentString);
@@ -33,9 +40,10 @@ const convertCommentStringToCommentObject = (commentString: string): CommentType
     id: crypto.randomUUID(),
     startTimestamp: startTimestamp || "",
     endTimestamp: endTimestamp || "",
-    eventType: eventType || EVENT_TYPE.OTHER,
+    eventTypes: eventTypesArray.length ? eventTypesArray : [EVENT_TYPE.OTHER],
     includeOnHighlights,
     explanation: explanation || "",
+    includeOnAwardShortlist,
   };
 }
 
@@ -73,8 +81,8 @@ const sortComments = (comments: CommentType[]) => {
 const retrieveStoredCommentsFromLocalStorage = (): CommentType[] => {
   const storedComments = localStorage.getItem("comments");
 
-  console.log("Stored comments:", storedComments);
-  console.log("Parsed comments:", JSON.parse(storedComments || "[]"));
+  // console.log("Stored comments:", storedComments);
+  // console.log("Parsed comments:", JSON.parse(storedComments || "[]"));
 
   return storedComments ? sortComments(JSON.parse(storedComments)) : [];
 }

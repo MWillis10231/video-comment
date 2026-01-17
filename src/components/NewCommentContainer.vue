@@ -10,10 +10,11 @@ const emit = defineEmits(['add']);
 const getNewComment = () => ({
   startTimestamp: '00:00:00',
   endTimestamp: null,
-  eventType: EVENT_TYPE.OTHER,
+  eventTypes: [EVENT_TYPE.OTHER],
   includeOnHighlights: false,
   explanation: '',
   id: uuidv4(),
+  includeOnAwardShortlist: false,
 })
 
 const comment = ref(getNewComment()) as Ref<CommentType>;

@@ -18,9 +18,14 @@ chrome.runtime.onMessage.addListener(
       const commentsArray = Array.from(document.querySelectorAll('#contents ytd-comment-thread-renderer #content-text .yt-core-attributed-string'));
       const mappedComments = commentsArray.map(comment => {
         const commentText = comment.innerHTML
-        const commentTextWithReplacedStars = commentText.replace(/(<img).+?(>)/g, '⭐');
 
-        const commentTextWithoutTags = commentTextWithReplacedStars.replace(/(<([^>]+)>)/ig, '');
+        const commentTextWithImgTagsReplacedWithAltValues = commentText.replace(/(<img).+?(>)/g, (match) => {
+          const altMatch = match.match(/alt="(.*?)"/);
+
+          return altMatch && altMatch[1] ? altMatch[1] : '';
+        });
+
+        const commentTextWithoutTags = commentTextWithImgTagsReplacedWithAltValues.replace(/(<([^>]+)>)/ig, '');
         return commentTextWithoutTags;
       });
 

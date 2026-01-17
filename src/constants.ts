@@ -38,6 +38,34 @@ const EVENT_TYPE_TO_DESCRIPTION_MAP = {
   [EVENT_TYPE.OTHER]: 'Other',
 }
 
+const DESCRIPTION_TO_EVENT_TYPE_MAP = {
+  ['Goal']: EVENT_TYPE.GOAL,
+  ['Pass']: EVENT_TYPE.PASS,
+  ['Shot']: EVENT_TYPE.SHOT,
+  ['Control']: EVENT_TYPE.CONTROL,
+  ['Tackle']: EVENT_TYPE.TACKLE,
+  ['Defensive Action']: EVENT_TYPE.DEFENSIVE_ACTION,
+  ['Save']: EVENT_TYPE.SAVE,
+  ['Foul']: EVENT_TYPE.FOUL,
+  ['Yellow Card']: EVENT_TYPE.YELLOW_CARD,
+  ['Red Card']: EVENT_TYPE.RED_CARD,
+  ['Skill']: EVENT_TYPE.SKILL,
+  ['Injury']: EVENT_TYPE.INJURY,
+  ['Offside']: EVENT_TYPE.OFFSIDE,
+  ['Penalty']: EVENT_TYPE.PENALTY,
+  ['Free Kick']: EVENT_TYPE.FREE_KICK,
+  ['Corner']: EVENT_TYPE.CORNER,
+  ['Throw In']: EVENT_TYPE.THROW_IN,
+  ['Substitution']: EVENT_TYPE.SUBSTITUTION,
+  ['Blooper']: EVENT_TYPE.BLOOPER,
+  ['Kick Off']: EVENT_TYPE.KICK_OFF,
+  ['Half Time']: EVENT_TYPE.HALF_TIME,
+  ['Full Time']: EVENT_TYPE.FULL_TIME,
+  ['Extra Time']: EVENT_TYPE.EXTRA_TIME,
+  ['Penalty Shootout']: EVENT_TYPE.PENALTY_SHOOTOUT,
+  ['Other']: EVENT_TYPE.OTHER,
+}
+
 const EVENT_TYPE_CATEGORY_MAP = {
   [EVENT_TYPE_CATEGORY.ATTACK]: {
     name: 'Attack',
@@ -169,4 +197,5 @@ export {
   EVENT_TYPE_TO_DESCRIPTION_MAP,
   EVENT_TYPE_CATEGORY_MAP,
   FONT_FAMILIES_MAP,
+  DESCRIPTION_TO_EVENT_TYPE_MAP,
 };
