@@ -4,10 +4,14 @@ import CommentPage from './components/CommentPage.vue';
 import { PAGE, SETTINGS_KEY } from './enum';
 import AboutPage from './components/AboutPage.vue';
 import SettingsPage from './components/SettingsPage.vue';
-import { DEFAULT_SETTINGS, getSettingsValue } from './settingsService';
+import { DEFAULT_SETTINGS, getSettingsValue, getStoredSettings, setSettings } from './settingsService';
 import { FONT_FAMILIES_MAP } from './constants';
 import ImportPage from './components/ImportPage.vue';
 import { getTabId, sendMessageToTab } from './chromeTabsService';
+import CommentsIcon from './components/Icons/CommentsIcon.vue';
+import SettingsIcon from './components/Icons/SettingsIcon.vue';
+import ImportIcon from './components/Icons/ImportIcon.vue';
+import InfoIcon from './components/Icons/InfoIcon.vue';
 
 const page = ref(PAGE.COMMENTS);
 const app = useTemplateRef('app');
@@ -18,6 +22,9 @@ const getNewSettings = () => {
   const fontSetting = getSettingsValue(SETTINGS_KEY.FONT_FAMILY) ?? DEFAULT_SETTINGS.fontFamily;
   const darkHighlightColor = getSettingsValue(SETTINGS_KEY.DARK_HIGHLIGHT_COLOR) ?? DEFAULT_SETTINGS.darkHighlightColor;
   const lightHighlightColor = getSettingsValue(SETTINGS_KEY.LIGHT_HIGHLIGHT_COLOR) ?? DEFAULT_SETTINGS.lightHighlightColor;
+  const storedPage = getSettingsValue(SETTINGS_KEY.OPEN_PAGE);
+
+  page.value = storedPage;
 
   if (app) {
     app.value?.style.setProperty('--font-family', FONT_FAMILIES_MAP[fontSetting].value);
@@ -51,6 +58,21 @@ const handleLoad = async () => {
   } finally {
     isLoading.value = false;
   }
+}
+
+const changePage = (newPage: PAGE) => {
+  const oldSettings = getStoredSettings();
+
+  page.value = newPage;
+
+  const newSettings = {
+    ...oldSettings,
+    [SETTINGS_KEY.OPEN_PAGE]: newPage,
+  }
+
+  console.log(newSettings);
+
+  setSettings(newSettings);
 }
 
 getNewSettings();
@@ -96,33 +118,33 @@ handleLoad();
       <button
         :class="['button', { active: page === PAGE.COMMENTS }]"
         :disabled="page === PAGE.COMMENTS"
-        @click="page = PAGE.COMMENTS"
+        @click="changePage(PAGE.COMMENTS)"
       >
-        Comments 💬
+        Comments <CommentsIcon class="icon" />
       </button>
 
       <button
         :class="['button', { active: page === PAGE.SETTINGS }]"
         :disabled="page === PAGE.SETTINGS"
-        @click="page = PAGE.SETTINGS"
+        @click="changePage(PAGE.SETTINGS)"
       >
-        Settings ⚙️
+        Settings <SettingsIcon class="icon" />
       </button>
 
       <button
         :class="['button', { active: page === PAGE.IMPORT }]"
         :disabled="page === PAGE.IMPORT"
-        @click="page = PAGE.IMPORT"
+        @click="changePage(PAGE.IMPORT)"
       >
-        Import ⬆️
+        Import <ImportIcon class="icon" />
       </button>
 
       <button
         :class="['button', { active: page === PAGE.ABOUT }]"
         :disabled="page === PAGE.ABOUT"
-        @click="page = PAGE.ABOUT"
+        @click="changePage(PAGE.ABOUT)"
       >
-        About ℹ️
+        About <InfoIcon class="icon" />
       </button>
     </nav>
 

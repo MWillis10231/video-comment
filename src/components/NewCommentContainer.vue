@@ -2,7 +2,6 @@
 import { ref, type Ref } from 'vue';
 import { v4 as uuidv4 } from 'uuid';
 import CommentFormContainer from './CommentFormContainer.vue';
-import { EVENT_TYPE } from '@/enum';
 import type { CommentType } from '@/types';
 
 const emit = defineEmits(['add']);
@@ -10,7 +9,7 @@ const emit = defineEmits(['add']);
 const getNewComment = () => ({
   startTimestamp: '00:00:00',
   endTimestamp: null,
-  eventTypes: [EVENT_TYPE.OTHER],
+  eventTypes: [],
   includeOnHighlights: false,
   explanation: '',
   id: uuidv4(),

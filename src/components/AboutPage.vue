@@ -6,7 +6,7 @@
   <div class="container">
     <h2>About</h2>
 
-    <p>Current version: 1.3.0</p>
+    <p>Current version: 2.0.0</p>
 
     <article>
       <h3>What is this?</h3>
@@ -17,6 +17,30 @@
 
     <article>
       <h3>Changelog</h3>
+
+      <ChangelogEntry>
+        <template #version>## 2.0.0</template>
+
+        <template #major>
+          <li>Enabled multiple events for single comment</li>
+          <li>Added shortlist for awards option</li>
+          <li>Submitting a comment is no longer possible without an event</li>
+        </template>
+
+        <template #minor>
+          <li>Redesigned icons</li>
+          <li>Added video control options - including video speed and mute</li>
+          <li>Added shortcuts for all major comment actions</li>
+          <li>Added settings to open last opened page on startup</li>
+          <li>Added setting for default padding of start timestamp</li>
+          <li>Added lots of new tooltips</li>
+        </template>
+
+        <template #bug>
+          <li>Fixed all icons being filtered from comment parsing</li>
+          <li>Fixed many visual bugs</li>
+        </template>
+      </ChangelogEntry>
 
       <ChangelogEntry>
         <template #version>## 1.3.0</template>

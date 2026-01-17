@@ -34,11 +34,35 @@ chrome.runtime.onMessage.addListener(
       sendResponse(flatMappedComments);
     }
 
-    if (request.action === "play") {
-      const playButton = document.querySelector('.ytp-play-button');
+    if (request.action === "play" || request.action === "pause") {
+      const video = document.querySelector('#movie_player > div.html5-video-container > video')
+      const isPlaying = video.paused === false;
+      const shouldPlay = request.action === "play";
 
-      if (playButton) {
-        playButton.click();
+      if (isPlaying && !shouldPlay) {
+        video.pause();
+        sendResponse(false)
+      } else if (!isPlaying && shouldPlay) {
+        video.play();
+        sendResponse(true)
+      } else {
+        sendResponse(isPlaying)
+      }
+    }
+
+    if (request.action === "mute" || request.action === "unmute") {
+      const videoElement = document.querySelector('#movie_player > div.html5-video-container > video');
+      const isMuted = videoElement.muted;
+      const shouldMute = request.action === "mute";
+
+      if (isMuted && !shouldMute) {
+        videoElement.muted = false;
+        sendResponse(false)
+      } else if (!isMuted && shouldMute) {
+        videoElement.muted = true;
+        sendResponse(true)
+      } else {
+        sendResponse(isMuted)
       }
     }
 
@@ -53,17 +77,14 @@ chrome.runtime.onMessage.addListener(
       const requestSpeed = Number(request.speed);
       const videoElement = document.querySelector('#movie_player > div.html5-video-container > video');
 
-      if (videoElement.playbackRate + requestSpeed <= 0.25) {
-        videoElement.playbackRate = 0.25;
-        return;
-      }
-
-      if (videoElement.playbackRate + requestSpeed >= 5) {
-        videoElement.playbackRate = 5;
-        return;
-      }
-
-      videoElement.playbackRate += requestSpeed;
+      videoElement.playbackRate = requestSpeed;
       sendResponse(videoElement.playbackRate);
     }
   });
+
+chrome.runtime.addEventListener('play',
+  (event) => {
+    console.log(`video is playing`)
+    console.log(event)
+  }
+)

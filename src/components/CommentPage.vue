@@ -8,6 +8,7 @@ import { clearStoredCommentsFromLocalStorage, parseComments, retrieveStoredComme
 import CustomLabel from './CustomLabel.vue';
 import VideoControlsContainer from './VideoControlsContainer.vue';
 import { getTabId, sendMessageToTab } from '@/chromeTabsService';
+import AllCommentsHeader from './AllCommentsHeader.vue';
 
 const comments = ref([]) as Ref<CommentType[]>;
 const editMode = ref(false);
@@ -137,52 +138,16 @@ getStoredComments();
     </section>
 
     <section class="allCommentsSection">
-      <h2 class="commentsHeader">
-        All Comments
+      <AllCommentsHeader
+        :publishMode="publishMode"
+        :hasComments="comments.length === 0"
+        @togglePublishMode="publishMode = !publishMode"
+        @cleanComments="handleCleanComments"
+        @removeComments="removeComments"
+        @copyCommentsToClipboard="copyCommentsToClipboard"
+      />
 
-        <CustomLabel name="copy-comments">
-          <button @click="copyCommentsToClipboard">
-              📋
-          </button>
-
-          <template #tooltip>Copy comments to clipboard</template>
-        </CustomLabel>
-
-        <CustomLabel name="toggle-publish-mode">
-          <button @click="publishMode = !publishMode">
-            {{ publishMode ? `✏️` : `💎` }}
-          </button>
-          <template #tooltip>Toggle {{ publishMode ? `edit` : `publish` }} mode</template>
-        </CustomLabel>
-
-        <CustomLabel
-          v-if="!publishMode"
-          name="clean-comments-marked-for-deletion"
-        >
-          <button
-
-            @click="handleCleanComments"
-            :disabled="comments.length === 0"
-          >
-            🧽
-          </button>
-
-          <template #tooltip>Remove all comments marked for deletion</template>
-        </CustomLabel>
-
-        <CustomLabel name="remove-all-comments">
-          <button
-            :disabled="comments.length === 0"
-            @click="removeComments"
-          >
-            🗑️
-          </button>
-
-          <template #tooltip>Remove all comments</template>
-        </CustomLabel>
-      </h2>
-
-      <ul ref="commentsList">
+      <ul ref="commentsList" class="commentsList">
         <CommentContainer
           v-for="(comment, index) in commentsToShow"
           :key="index"
@@ -223,9 +188,9 @@ getStoredComments();
     width: 100%;
   }
 
-  .commentsHeader {
-    gap: .5rem;
-    white-space: nowrap;
-    width: fit-content
+  .commentsList {
+    display: flex;
+    flex-direction: column;
+    gap: .25rem;
   }
 </style>

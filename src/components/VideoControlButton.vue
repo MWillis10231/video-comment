@@ -1,14 +1,25 @@
-<template>
-  <button
-    class="button"
-    @click="$emit('click')"
-  >
-    <slot />
+<script setup lang="ts">
+import CustomLabel from './CustomLabel.vue';
 
-    <span class="label">
+defineProps<{
+  name: string;
+}>();
+</script>
+
+<template>
+  <CustomLabel :name="`video-control-button-${name}`">
+    <button class="button">
+      <slot />
+
+      <span class="shortcut">
+        <slot name="shortcut" />
+      </span>
+    </button>
+
+    <template #tooltip>
       <slot name="label" />
-    </span>
-  </button>
+    </template>
+  </CustomLabel>
 </template>
 
 <style scoped>
@@ -27,9 +38,17 @@
     &:active {
       background-color: gray;
     }
+
+    &:hover {
+      border-color: white;
+    }
+
+    &:hover .shortcut {
+      color: white;
+    }
   }
 
-  .label {
+  .shortcut {
     position: absolute;
     bottom: -1rem;
     left: 50%;

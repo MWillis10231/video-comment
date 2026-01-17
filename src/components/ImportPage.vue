@@ -6,9 +6,14 @@ import { ref, type Ref } from 'vue';
 import CustomLabel from './CustomLabel.vue';
 import CommentContainer from './CommentContainer.vue';
 import { convertDateToTimeStamp, convertTimeStampToDate } from '@/timestampService';
-import { add, addSeconds, differenceInSeconds } from 'date-fns';
+import { addSeconds, differenceInSeconds } from 'date-fns';
 import TimeShift from './TimeShift.vue';
 import { EVENT_TYPE_TO_DESCRIPTION_MAP } from '@/constants';
+import CopyAllIcon from './Icons/CopyAllIcon.vue';
+import TimerIcon from './Icons/TimerIcon.vue';
+import ImportIcon from './Icons/ImportIcon.vue';
+import AddIcon from './Icons/AddIcon.vue';
+import ConvertIcon from './Icons/ConvertIcon.vue';
 
 
 const comments = ref([]) as Ref<CommentType[]>;
@@ -140,13 +145,13 @@ getStoredComments();
 </script>
 
 <template>
-  <div>
-    <div>
+  <div class="page">
+    <div class="buttons">
       <CustomLabel name="remove-all-comments">
           <button
             @click="readCommentsFromPage"
           >
-            ⬆️
+            <ImportIcon class="icon" />
           </button>
           <template #tooltip>Import comments from page</template>
         </CustomLabel>
@@ -155,7 +160,7 @@ getStoredComments();
         <button
           @click="generateEndTimestamps"
         >
-          ⏱️
+          <TimerIcon class="icon" />
         </button>
         <template #tooltip>Generate end timestamps for comments without them</template>
       </CustomLabel>
@@ -164,7 +169,7 @@ getStoredComments();
         <button
           @click="convertTimeStampsToCorrectFormat"
         >
-          🔄
+          <ConvertIcon class="icon" />
         </button>
         <template #tooltip>Convert all timestamps to correct format</template>
       </CustomLabel>
@@ -173,7 +178,7 @@ getStoredComments();
         <button
           @click="padStartAndEndTimestamp"
         >
-          ➕
+          <AddIcon class="icon" />
         </button>
         <template #tooltip>Pad start and end timestamps by 5 seconds</template>
       </CustomLabel>
@@ -182,7 +187,7 @@ getStoredComments();
         <button
           @click="copyAllCommentsAsCSV"
         >
-          📋
+          <CopyAllIcon class="icon" />
         </button>
         <template #tooltip>Copy all comments as CSV to clipboard</template>
       </CustomLabel>
@@ -207,3 +212,18 @@ getStoredComments();
       </ul>
   </div>
 </template>
+
+<style scoped>
+  .page {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .buttons {
+    align-items: center;
+    display: flex;
+    justify-content: center;
+    gap: 0.5rem;
+  }
+</style>

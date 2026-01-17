@@ -68,6 +68,7 @@ const DESCRIPTION_TO_EVENT_TYPE_MAP = {
 
 const EVENT_TYPE_CATEGORY_MAP = {
   [EVENT_TYPE_CATEGORY.ATTACK]: {
+    id: EVENT_TYPE_CATEGORY.ATTACK,
     name: 'Attack',
     color: '#f44336',
     keyboardKey: 'a',
@@ -81,6 +82,7 @@ const EVENT_TYPE_CATEGORY_MAP = {
     ]
   },
   [EVENT_TYPE_CATEGORY.DEFENSE]: {
+    id: EVENT_TYPE_CATEGORY.DEFENSE,
     name: 'Defense',
     color: '#4caf50',
     keyboardKey: 'd',
@@ -92,6 +94,7 @@ const EVENT_TYPE_CATEGORY_MAP = {
     ]
   },
   [EVENT_TYPE_CATEGORY.DISCIPLINE]: {
+    id: EVENT_TYPE_CATEGORY.DISCIPLINE,
     name: 'Discipline',
     color: '#ffeb3b',
     keyboardKey: 'f',
@@ -103,6 +106,7 @@ const EVENT_TYPE_CATEGORY_MAP = {
     ]
   },
   [EVENT_TYPE_CATEGORY.SET_PIECE]: {
+    id: EVENT_TYPE_CATEGORY.SET_PIECE,
     name: 'Set Piece',
     color: '#2196f3',
     icon: FlagIcon,
@@ -115,6 +119,7 @@ const EVENT_TYPE_CATEGORY_MAP = {
     ]
   },
   [EVENT_TYPE_CATEGORY.TEMPORAL]: {
+    id: EVENT_TYPE_CATEGORY.TEMPORAL,
     name: 'Temporal',
     color: '#9c27b0',
     icon: WatchIcon,
@@ -128,10 +133,11 @@ const EVENT_TYPE_CATEGORY_MAP = {
     ]
   },
   [EVENT_TYPE_CATEGORY.OTHER]: {
+    id: EVENT_TYPE_CATEGORY.OTHER,
     name: 'Other',
     color: '#607d8b',
     icon: ToolsIcon,
-    keyboardKey: 'q',
+    keyboardKey: 'w',
     eventTypes: [
       EVENT_TYPE.INJURY,
       EVENT_TYPE.OFFSIDE,
@@ -193,9 +199,18 @@ const FONT_FAMILIES_MAP = {
   },
 }
 
+const VALID_NUMBER_KEYS = [
+  `1`,
+  `2`,
+  `3`,
+  `4`,
+  `5`
+]
+
 export {
   EVENT_TYPE_TO_DESCRIPTION_MAP,
   EVENT_TYPE_CATEGORY_MAP,
   FONT_FAMILIES_MAP,
   DESCRIPTION_TO_EVENT_TYPE_MAP,
+  VALID_NUMBER_KEYS
 };

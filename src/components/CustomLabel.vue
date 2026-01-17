@@ -30,18 +30,21 @@
   }
 
   .label-tooltip {
+    border: 1px solid light-dark(var(--light-highlight-color), var(--dark-highlight-color));
+    background-color: light-dark(white, black);
+    border-radius: 0.5rem;
+    color: light-dark(black, white);
+    font-weight: lighter;
+    font-size: 0.8rem;
+    left: 50%;
+    opacity: 0;
+    padding: 0.5rem;
     position: absolute;
     top: 2rem;
-    left: 50%;
     transform: translateX(-50%);
-    background-color: var(--dark-highlight-color);
-    color: white;
-    padding: 0.5rem;
-    border-radius: 0.5rem;
-    font-size: 0.8rem;
-    white-space: nowrap;
-    opacity: 0;
     transition: opacity 0.2s ease-in-out;
+    white-space: nowrap;
+    z-index: 100;
   }
 
   .label-container:hover .label-tooltip {

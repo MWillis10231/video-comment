@@ -114,10 +114,6 @@ defineProps<{
   gap: .2rem;
 }
 
-.icon {
-  fill: white;
-}
-
 .close {
   fill: red;
 }

@@ -77,6 +77,7 @@ input {
 }
 
 .icon {
+  fill: light-dark(black, white);
   height: 1rem;
   vertical-align: middle;
   width: 1rem;

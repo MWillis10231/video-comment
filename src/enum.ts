@@ -61,6 +61,8 @@ enum SETTINGS_KEY {
   FONT_FAMILY = 'fontFamily',
   DARK_HIGHLIGHT_COLOR = 'darkHighlightColor',
   LIGHT_HIGHLIGHT_COLOR = 'lightHighlightColor',
+  START_TIMESTAMP_PADDING = 'startTimestampPadding',
+  OPEN_PAGE = 'openPage',
 }
 
 enum PLAYBACK_SPEEDS {
@@ -74,6 +76,29 @@ enum PLAYBACK_SPEEDS {
   DOUBLE = 2.0,
 }
 
+enum SKIP_INTERVALS {
+  NEGATIVE_TEN = -10,
+  NEGATIVE_FIVE = -5,
+  FIVE = 5,
+  TEN = 10,
+}
+
+enum EXTENDED_SKIP_INTERVALS {
+  NEGATIVE_THIRTY = -30,
+  THIRTY = 30,
+}
+
+enum COMMENT_KEY {
+  ID = 'id',
+  START_TIMESTAMP = 'startTimestamp',
+  END_TIMESTAMP = 'endTimestamp',
+  EVENT_TYPES = 'eventTypes',
+  INCLUDE_ON_HIGHLIGHTS = 'includeOnHighlights',
+  EXPLANATION = 'explanation',
+  DELETED = 'deleted',
+  INCLUDE_ON_AWARD_SHORTLIST = 'includeOnAwardShortlist'
+}
+
 export {
   PLAYBACK_SPEEDS,
   EVENT_TYPE,
@@ -81,4 +106,7 @@ export {
   PAGE,
   FONT_FAMILIES,
   SETTINGS_KEY,
+  COMMENT_KEY,
+  SKIP_INTERVALS,
+  EXTENDED_SKIP_INTERVALS
 }

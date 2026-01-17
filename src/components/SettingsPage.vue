@@ -1,17 +1,18 @@
 <script setup lang="ts">
 import { FONT_FAMILIES_MAP } from '@/constants';
 import { FONT_FAMILIES, SETTINGS_KEY } from '@/enum';
-import { 
+import {
   DEFAULT_SETTINGS,
-  getStoredSettings, 
-  removeSettings, 
-  setSettings, 
+  getStoredSettings,
+  removeSettings,
+  setSettings,
 } from '@/settingsService';
-import { 
-  ref, 
-  type Ref 
+import {
+  ref,
+  type Ref
 } from 'vue';
 import type { ColorValueHex, Settings } from '@/types';
+import DeleteForeverIcon from './Icons/DeleteForeverIcon.vue';
 
 const emit = defineEmits(['update']);
 
@@ -25,7 +26,12 @@ const handleEditSetting = (setting: keyof Settings, newValue: FONT_FAMILIES | Co
 const editFont = (newFont: FONT_FAMILIES) => handleEditSetting(SETTINGS_KEY.FONT_FAMILY, newFont);
 
 const fetchStoredSettings = () => {
-  settings.value = getStoredSettings()
+  const storedSEttings = getStoredSettings();
+
+  settings.value = {
+    ...DEFAULT_SETTINGS,
+    ...storedSEttings,
+  };
 }
 
 const storeSettings = () => {
@@ -50,20 +56,37 @@ fetchStoredSettings();
 
     <div>
       <button @click="removeAllSettings">
-        🗑️
+        <DeleteForeverIcon class="icon" /> Delete all settings
       </button>
     </div>
-    
+
     <p>
       Light/dark mode is toggled via the browser preferences
     </p>
 
     <section>
-      <h3>Font</h3>
+      <h3>Extra Timestamp padding</h3>
 
       <div class="settingsSection">
-        <button 
-          v-for="(fontFamily, index) in FONT_FAMILIES_MAP" 
+        <label>
+          Start padding (seconds) - deducted from start timestamps
+
+          <input
+            type="number"
+            max="0"
+            :value="settings[SETTINGS_KEY.START_TIMESTAMP_PADDING]"
+            @change="handleEditSetting(SETTINGS_KEY.START_TIMESTAMP_PADDING, $event.target.value)"
+          />
+        </label>
+      </div>
+    </section>
+
+    <section>
+      <h3>Font</h3>
+
+      <div class="settingsSection grid">
+        <button
+          v-for="(fontFamily, index) in FONT_FAMILIES_MAP"
           :key="index"
           :class="['button', { active: settings[SETTINGS_KEY.FONT_FAMILY] === index }]"
           :style="{ fontFamily: fontFamily.value }"
@@ -81,19 +104,17 @@ fetchStoredSettings();
         <label>
           Light highlight color
 
-          <input 
+          <input
             type="color"
             :value="settings[SETTINGS_KEY.LIGHT_HIGHLIGHT_COLOR]"
             @change="handleEditSetting(SETTINGS_KEY.LIGHT_HIGHLIGHT_COLOR, $event.target.value)"
           />
         </label>
-      </div>
 
-      <div class="settingsSection">
         <label>
           Dark highlight color
 
-          <input 
+          <input
             type="color"
             :value="settings[SETTINGS_KEY.DARK_HIGHLIGHT_COLOR]"
             @change="handleEditSetting(SETTINGS_KEY.DARK_HIGHLIGHT_COLOR, $event.target.value)"
@@ -114,5 +135,10 @@ fetchStoredSettings();
   .settingsSection {
     display: flex;
     gap: 0.5rem;
+  }
+
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
   }
 </style>
