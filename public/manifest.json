@@ -1,7 +1,7 @@
 {
   "name": "Video Comments",
   "short_name": "Video Comments",
-  "version": "1.3.0",
+  "version": "2.0.0",
   "description": "To assist in recording video comments",
   "background": {
     "service_worker": "service-worker.js",
